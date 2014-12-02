@@ -1,40 +1,55 @@
-<?php
-
-$host 		= "localhost"; 
-$username	= "root"; 
-$password	= ""; 
-$db			= "timetable_tneu";
-mysql_connect($host, $username, $password) or die("Oops! Coudn't connect to server"); 
-mysql_select_db($db) or die("Oops! Coudn't select Database"); 
-mysql_query("SET character_set_results = 'utf8', character_set_client = 'utf8', character_set_connection = 'utf8', character_set_database = 'utf8', character_set_server = 'utf8'");
-$query = mysql_query("SELECT * FROM `teacher` ORDER BY id ASC");
-$count = mysql_num_rows($query);
-if($count > 0) {
-while($fetch = mysql_fetch_array($query)) {
-$database[] = $fetch;
-}
-}
-echo '<!DOCTYPE HTML>
-<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
-<meta charset="utf-8">
-<title>Rozklad</title>
-<link rel="stylesheet" href="style.css" />
-</head>
+<?php require_once "blocks/attach_style.php";?>
+<title>Головна сторінка</title>
+<meta charset="utf-8"/>
+<script>
+	function showContent(link) {
 
+		var cont = document.getElementById('contentBody');
+		var loading = document.getElementById('loading');
+
+		cont.innerHTML = loading.innerHTML;
+ 
+		var http = createRequestObject();					
+		if( http ) {
+			http.open('get', link);							
+			http.onreadystatechange = function () {			
+				if(http.readyState == 4) {
+					cont.innerHTML = http.responseText;		
+				}
+			}
+			http.send(null);    
+		} else {
+			document.location = link;	
+		}
+	}
+
+	
+	function createRequestObject() {
+		try { return new XMLHttpRequest() }
+		catch(e) {
+			try { return new ActiveXObject('Msxml2.XMLHTTP') }
+			catch(e) {
+				try { return new ActiveXObject('Microsoft.XMLHTTP') }
+				catch(e) { return null; }
+			}
+		}
+	}
+</script>
+</head>
 <body>
-<header>Виберіть викладача зі списку:</header>
-<div class="content_box">
-<form action="action/open_teach.php" method="post">
-<select name="teacher">';
-foreach($database as $value) {
-echo '<option>'.$value['value'].'</option>';
-}
-echo '</select><br>
-<input class="button" type="submit">
-</form>
-</div>
+	<table id="entered">
+		<?php
+			require_once "blocks/menu.php";
+			require_once "blocks/header.php";
+			require_once "blocks/content.php";
+			require_once "blocks/footer.php";
+		?>
+	</table>
+
+	<div id="loading" style="display: none">
+	<img src="images/load.gif">
+	</div>
+	
 </body>
-</html>
-';
-?>
